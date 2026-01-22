@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Filice Zanzariere | Soluzioni su Misura</title>
+    <link rel="icon" type="image/png" href="./img/baby-logo.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+/* --- BLOCCO TOTALE SCROLL ORIZZONTALE --- */
+    html, body {
+        max-width: 100%;
+        overflow-x: hidden !important; /* Questo è il segreto: VIETA lo scroll laterale */
+        position: relative;
+    }
+
+    body { font-family: 'Inter', sans-serif; }
+
+    .net-pattern {
+        background-color: #1f2937;
+        background-image: radial-gradient(#374151 1px, transparent 1px);
+        background-size: 4px 4px;
+    }
+
+    /* Pannello zanzariera */
+    .intro-gate-full {
+    position: fixed; /* Mantiene la zanzariera bloccata allo schermo */
+    inset: 0;
+    width: 100vw;    /* Larghezza schermo intero */
+    height: 100vh;   /* Altezza schermo intero */
+    z-index: 10;
+    
+    border-right: 8px solid #4b5563;
+    box-shadow: -5px 0 15px rgba(0,0,0,0.5);
+    
+    transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* STATO FINALE: Sposta tutto il pannello a sinistra (fuori schermo) */
+    body.intro-complete .intro-gate-full {
+        transform: translateX(-100%);
+    }
+
+    /* Gestione Logo e Overlay */
+    body.intro-complete #intro-overlay { pointer-events: none; }
+    
+    /* Il logo centrale svanisce mentre la zanzariera si apre */
+    body.intro-complete #intro-logo-center { opacity: 0; transform: scale(0.9); }
+    
+    /* Il logo della navbar appare */
+    body.intro-complete #navbar-logo { opacity: 1; transform: translateY(0); }
+    #navbar-logo {
+        opacity: 0;
+        transform: translateY(10px);
+        transition: all 0.8s ease-out 0.8s; /* Ritardo aumentato per aspettare lo scorrimento */
+    }
+
+    /* Nascondi l'header all'inizio */
+    header {
+        transform: translateY(-100%); /* Spostalo fuori dallo schermo in alto */
+        transition: transform 0.8s ease-out 0.5s; /* Preparalo a scendere */
+    }
+
+    /* Quando l'intro è finita, fallo scendere */
+    body.intro-complete header {
+        transform: translateY(0); /* Torna alla posizione normale */
+    }
+
+    /* Animazione Menu Mobile a "Zanzariera" */
+#mobile-menu {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden; /* Nasconde il contenuto se l'altezza è 0 */
+    transition: max-height 0.5s ease-in-out, opacity 0.4s ease-in-out;
+}
+
+/* Quando il menu è aperto */
+#mobile-menu.open {
+    max-height: 500px; /* Un valore alto a sufficienza per contenere i link */
+    opacity: 1;
+}
+
+</style>
+</head>
+<body class="bg-gray-50 text-gray-800 overflow-hidden"> 
+    <div id="intro-overlay" class="fixed inset-0 z-[100] flex items-center justify-center">
+    <div class="intro-gate-full net-pattern"></div>
+    <div id="intro-logo-center" class="relative z-20 flex flex-col items-center transition-opacity duration-700 ease-out">
+            <img src="./img/logo-bianco.png" alt="Logo Filice Zanzariere" class="h-24 w-auto md:h-32 mb-4 drop-shadow-2xl animate-pulse">
+            <p class="text-white text-lg font-light tracking-widest uppercase">Comfort e Protezione</p>
+    </div>
+</div>
+
+<header class="fixed w-full z-50 top-0 left-0 shadow-md">
+<div class="bg-gray-900 text-white text-xs sm:text-sm py-2 transition-all duration-300 hidden md:block">
+    <div class="max-w-7xl mx-auto px-4 flex justify-between items-center h-full"> <div class="hidden md:flex flex-row space-x-6 text-left text-gray-300">
+            <a href="https://maps.app.goo.gl/91iJutMsCGZS2YHJ7" target="_blank" class="flex items-center gap-1 hover:text-white transition">
+                <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                <span><strong>Showroom:</strong> Via Dogana, 125 - 87032 Amantea (CS)</span>
+            </a>
+            <span class="text-gray-600">|</span> 
+            <a href="https://maps.app.goo.gl/p3fWbuSxPt6aS9obA" target="_blank" class="flex items-center gap-1 hover:text-white transition">
+                <svg class="w-4 h-4 text-yellow-500 group-hover:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h12a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V6z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m-8-8h16"></path></svg>
+                <span><strong>Lab:</strong>     Corso Francia, 18 - 87032 Amantea (CS)</span>
+            </a>
+        </div>
+
+        <div class="md:hidden"></div>
+
+        <div class="flex items-center gap-3 md:gap-6">
+            
+            <a href="mailto:zanzarierefilice@gmail.com" class="hidden md:flex items-center gap-2 text-gray-300 hover:text-white transition">
+                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                <span>zanzarierefilice@gmail.com</span>
+            </a>
+
+            <a href="tel:+390982320148" class="flex items-center gap-2 bg-blue-600 px-3 py-1 rounded-full font-bold hover:bg-blue-500 transition shadow-sm animate-pulse text-white text-xs sm:text-sm">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+                0982 320148
+            </a>
+        </div>
+
+    </div>
+</div>
+
+    <nav class="bg-blue-50 shadow-md w-full z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex-shrink-0 flex items-center">
+                    <img id="navbar-logo" src="./img/logo.png" alt="Logo Filice Zanzariere" class="h-auto w-12">
+                </div>
+                <div class="hidden md:flex space-x-8 items-center">
+                    <a href="#home" class="text-gray-600 hover:text-blue-600 transition">Home</a>
+                    <a href="#soluzioni" class="text-gray-600 hover:text-blue-600 transition">Soluzioni</a>
+                    <a href="#chi-siamo" class="text-gray-600 hover:text-blue-600 transition">Chi siamo</a>
+
+                    <div class="h-6 w-px bg-gray-300"></div>
+
+                        <div class="flex space-x-4">
+        
+                            <a href="https://www.instagram.com/zanzarierefilice/" target="_blank" class="text-gray-500 hover:text-pink-600 transition">
+                                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                    <path fill-rule="evenodd" d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06h-.08c-2.643 0-2.987-.012-4.043-.06-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.047-1.024-.06-1.379-.06-3.808v-.63c0-2.43.013-2.784.06-3.808.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772 4.902 4.902 0 011.772-1.153c.636-.247 1.363-.416 2.427-.465C9.673 2.013 10.03 2 12.315 2zm-1.028 16.5c2.31 0 2.585-.01 3.497-.052.846-.038 1.306-.182 1.613-.3.407-.156.697-.344.996-.643.299-.299.487-.589.643-.996.118-.307.262-.767.3-1.613.041-.912.05-1.188.05-3.497 0-2.31-.009-2.585-.05-3.497-.039-.846-.183-1.306-.3-1.613-.156-.407-.344-.697-.643-.996-.299-.299-.589-.487-.996-.643-.307-.118-.767-.262-1.613-.3-.912-.041-1.188-.05-3.497-.05-2.31 0-2.585.009-3.497.05-.846.039-1.306.183-1.613.3-.407.156-.697.344-.996.643-.299.299-.487.589-.643.996-.118.307-.262.767-.3 1.613-.042.912-.051 1.188-.051 3.497 0 2.31.009 2.585.051 3.497.038.846.182 1.306.3 1.613.156.407.344.697.643.996.299.299.589.487.996.643.307.118.767.262 1.613.3.912.041 1.188.05 3.497.05zm1.028-11.75a4.25 4.25 0 100 8.5 4.25 4.25 0 000-8.5zm0 1.5a2.75 2.75 0 110 5.5 2.75 2.75 0 010-5.5zm5.025-2.525a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd" />
+                                </svg>
+                            </a>
+                            
+                            <a href="https://www.facebook.com/profile.php?id=100086853952911" target="_blank" class="text-gray-500 hover:text-blue-600 transition">
+                                 <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                     <path fill-rule="evenodd" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" clip-rule="evenodd" />
+                                 </svg>
+                            </a>
+
+                            <a href="https://www.tiktok.com/@zanzarierefilice" target="_blank" class="text-gray-500 hover:text-black transition">
+                                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                    <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
+                                </svg>
+                            </a>
+                    </div>
+                    
+                    <a href="#contatti" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition">Contattaci</a>
+                </div>
+
+                <div class="flex items-center md:hidden z-50"> 
+                    <button type="button" id="mobile-menu-btn" class="inline-flex items-center justify-center p-2 rounded-md text-gray-500 hover:text-gray-700 hover:bg-blue-100 focus:outline-none">
+                        <svg class="h-8 w-8" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="md:hidden absolute top-full left-0 w-full bg-blue-50 shadow-lg border-t border-blue-100" id="mobile-menu">
+            <div class="px-4 pt-4 pb-6 space-y-3">
+                
+                <a href="#home" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-100">Home</a>
+                <a href="#soluzioni" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-100">Soluzioni</a>
+                <a href="#chi-siamo" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-100">Chi siamo</a>
+                
+                <div class="mt-4 pt-4 border-t border-blue-200">
+                    <p class="px-3 text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Contatti & Sedi</p>
+                    
+                    <div class="px-3 space-y-3 text-sm text-gray-600">
+                        <a href="https://maps.app.goo.gl/91iJutMsCGZS2YHJ7" target="_blank" class="flex items-start gap-3">
+                            <svg class="w-5 h-5 text-blue-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                            <span>Via Dogana, 125 - Amantea (CS)</span>
+                        </a>
+                        
+                        <a href="https://maps.app.goo.gl/p3fWbuSxPt6aS9obA" target="_blank" class="flex items-start gap-3">
+                            <svg class="w-5 h-5 text-yellow-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                            <span>Corso Francia 18, Amantea (CS)</span>
+                        </a>
+
+                        <a href="mailto:info@filicezanzariere.it" class="flex items-center gap-3 text-blue-600 font-medium">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                            info@filicezanzariere.it
+                        </a>
+
+                        <a href="tel:+390982320148" class="flex items-center justify-center w-full gap-2 bg-blue-600 text-white py-3 rounded-lg font-bold shadow-sm active:bg-blue-700 transition">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+                            Chiama 0982 320148
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="flex items-center justify-start px-3 space-x-6 py-2 mt-2">
+                    <span class="text-gray-400 text-sm">Seguici:</span>
+                    <a href="https://www.instagram.com/zanzarierefilice/" target="_blank" class="text-gray-500 hover:text-pink-600"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06h-.08c-2.643 0-2.987-.012-4.043-.06-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.047-1.024-.06-1.379-.06-3.808v-.63c0-2.43.013-2.784.06-3.808.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772 4.902 4.902 0 011.772-1.153c.636-.247 1.363-.416 2.427-.465C9.673 2.013 10.03 2 12.315 2zm-1.028 16.5c2.31 0 2.585-.01 3.497-.052.846-.038 1.306-.182 1.613-.3.407-.156.697-.344.996-.643.299-.299.487-.589.643-.996.118-.307.262-.767.3-1.613.041-.912.05-1.188.05-3.497 0-2.31-.009-2.585-.05-3.497-.039-.846-.183-1.306-.3-1.613-.156-.407-.344-.697-.643-.996-.299-.299-.589-.487-.996-.643-.307-.118-.767-.262-1.613-.3-.912-.041 1.188-.05-3.497-.05-2.31 0-2.585.009-3.497.05-.846.039-1.306.183-1.613.3-.407.156-.697.344-.996.643-.299.299-.487.589-.643.996-.118.307-.262.767-.3 1.613-.042.912-.051 1.188-.051 3.497 0 2.31.009 2.585.051 3.497.038.846.182 1.306.3 1.613.156.407.344.697.643.996.299.299.589.487.996.643.307.118.767.262 1.613.3.912.041 1.188.05 3.497.05zm1.028-11.75a4.25 4.25 0 100 8.5 4.25 4.25 0 000-8.5zm0 1.5a2.75 2.75 0 110 5.5 2.75 2.75 0 010-5.5zm5.025-2.525a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd" /></svg></a>
+                    <a href="https://www.facebook.com/profile.php?id=100086853952911" target="_blank" class="text-gray-500 hover:text-blue-600"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" clip-rule="evenodd" /></svg></a>
+                    <a href="https://www.tiktok.com/@zanzarierefilice" target="_blank" class="text-gray-500 hover:text-black"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/></svg></a>
+                </div>
+            </div>
+        </div>
+
+    </nav>
+</header>
+
+    <section id="home" class="relative bg-yellow-300 pt-36 pb-16 lg:pt-32 lg:pb-24">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center">
+            <div class="md:w-1/2 mb-10 md:mb-0">
+                <h1 class="text-4xl md:text-5xl font-bold leading-tight mb-4">
+                    Proteggi la tua casa con <br><span class="text-blue-600">Stile e Qualità</span>
+                </h1>
+                <p class="text-lg text-gray-600 mb-8">
+                    Produzione e installazione di zanzariere su misura. 
+                    Soluzioni innovative, resistenti e dal design curato per il tuo comfort.<br>
+                    Ad Amantea, in provincia di Cosenza.
+                </p>
+                <div class="flex space-x-4">
+                    <a href="#contatti" class="px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-lg hover:bg-blue-700 transition">
+                        Chiedi informazioni
+                    </a>
+                    <a href="#soluzioni" class="px-8 py-3 bg-white text-blue-600 border border-blue-600 font-semibold rounded-lg hover:bg-blue-50 transition">
+                        Scopri le soluzioni
+                    </a>
+                </div>
+            </div>
+            <div class="md:w-1/2">
+                <img src="./img/showroom.webp" alt="Finestra moderna" class="rounded-xl shadow-2xl">
+            </div>
+        </div>
+    </section>
+
+    <section id="soluzioni" class="py-16 bg-blue-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-">
+                <h2 class="text-3xl mb-5 font-bold text-gray-900">Le Nostre Soluzioni</h2>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-8">
+                <div class="bg-gray-50 rounded-lg overflow-hidden shadow hover:shadow-lg transition">
+                    <div class="h-48 bg-gray-300 w-full object-cover flex items-center justify-center text-gray-500">
+                        <img src="https://www.finestre.com/fileadmin/images/it/posaclima/installazione-finestra-posatore-partner.jpg" alt="Montaggio finestra" class="w-full h-48 object-cover rounded-t-lg">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-2">Serramenti</h3>
+                        <p class="text-gray-600 mb-4">Infissi in alluminio e PVC ad alta efficienza energetica. Garantiscono isolamento termico e acustico superiore, unendo sicurezza e design moderno per la tua casa.</p>
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 rounded-lg overflow-hidden shadow hover:shadow-lg transition">
+                    <div class="h-48 bg-gray-300 w-full object-cover flex items-center justify-center text-gray-500">
+                        <img src="https://blog.ratioform.it/wp-content/uploads/2021/04/zanza-scaled.jpg" alt="Montaggio finestra" class="w-full h-48 object-cover rounded-t-lg">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-2">Zanzariere</h3>
+                        <p class="text-gray-600 mb-4">Modelli su misura. Reti ad alta resistenza e trasparenza per proteggere i tuoi ambienti dagli insetti senza rinunciare alla luce.</p>
+                    </div>
+                </div>
+
+                                <div class="bg-gray-50 rounded-lg overflow-hidden shadow hover:shadow-lg transition">
+                    <div class="h-48 bg-gray-300 w-full object-cover flex items-center justify-center text-gray-500">
+                        <img src="https://thumbs.dreamstime.com/b/recinzione-di-giardino-fatta-con-pannelli-metallici-e-colonne-calcestruzzo-da-costruita-decorativi-recinzioni-galvanizzate-216820325.jpg" alt="Montaggio finestra" class="w-full h-48 object-cover rounded-t-lg">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-2">Recinzioni</h3>
+                        <p class="text-gray-600 mb-4">Sistemi di recinzione robusti e durevoli. Delimita i tuoi spazi esterni garantendo privacy e sicurezza, con uno stile pulito e curato nei dettagli.</p>
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 rounded-lg overflow-hidden shadow hover:shadow-lg transition">
+                    <div class="h-48 bg-gray-300 w-full object-cover flex items-center justify-center text-gray-500">
+                        <img src="https://img.freepik.com/foto-premium/riparazione-del-cancello-di-ferro-acciaio-per-saldatura-a-mano-dell-operaio_51524-17471.jpg" alt="Montaggio finestra" class="w-full h-48 object-cover rounded-t-lg">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-2">Lavorazioni in ferro</h3>
+                        <p class="text-gray-600 mb-4">Cancelli, ringhiere e inferriate di sicurezza realizzati artigianalmente. Solidità strutturale e personalizzazione completa per valorizzare la tua proprietà.</p>
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 rounded-lg overflow-hidden shadow hover:shadow-lg transition">
+                    <div class="h-48 bg-gray-300 w-full object-cover flex items-center justify-center text-gray-500">
+                        <img src="https://wips.plug.it/cips/paginegiallecasa/cms/2018/04/tapparella.jpg" alt="Montaggio finestra" class="w-full h-48 object-cover rounded-t-lg">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-2">Coibentazione cassonetti e tapparelle</h3>
+                        <p class="text-gray-600 mb-4">Elimina gli spifferi e riduci i rumori esterni coibentando i vecchi cassonetti. Sostituzione tapparelle con modelli termici per il massimo risparmio energetico.</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section id="chi-siamo" class="py-20 bg-blue-50 overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            
+                <div>
+                    <span class="text-blue-600 font-bold tracking-wider uppercase text-sm">La Nostra Azienda</span>
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mt-2 mb-6">
+                        Dal nostro laboratorio <br> alla tua finestra.
+                    </h2>
+                
+                    <p class="text-gray-600 text-lg leading-relaxed mb-6">
+                        Da anni <strong>Filice Zanzariere</strong> è il punto di riferimento in <strong>Calabria</strong>, e non solo, per chi cerca protezione e design. 
+                        Non siamo semplici rivenditori: nel nostro laboratorio ad <strong>Amantea</strong>, in provincia di <strong>Cosenza</strong>, assembliamo e verifichiamo ogni singola zanzariera.
+                    </p>
+
+                    <p class="text-gray-600 text-lg leading-relaxed mb-8">
+                        Crediamo che ogni casa sia diversa. Per questo veniamo noi a prendere le misure, ti consigliamo e installiamo il modello giusto.
+                    </p>
+
+                    <div class="space-y-4">
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 h-6 w-6 rounded-full bg-green-100 flex items-center justify-center border border-green-200 mt-1">
+                                <svg class="h-4 w-4 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                            </div>
+                            <p class="ml-4 text-gray-700 font-medium">Materiali resistenti di altissima qualità.</p>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 h-6 w-6 rounded-full bg-green-100 flex items-center justify-center border border-green-200 mt-1">
+                                <svg class="h-4 w-4 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                            </div>
+                            <p class="ml-4 text-gray-700 font-medium">Assistenza post-vendita.</p>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 h-6 w-6 rounded-full bg-green-100 flex items-center justify-center border border-green-200 mt-1">
+                                <svg class="h-4 w-4 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                            </div>
+                            <p class="ml-4 text-gray-700 font-medium">Sopralluogo e preventivo gratuiti.</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-10 flex items-center">
+                        <div class="ml-0"> <p class="text-base font-bold text-gray-900">Filice Zanzariere</p>
+                            <p class="text-sm text-gray-500">Artigiani dal 1984</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="relative">
+                    <div class="absolute -top-4 -right-4 w-72 h-72 bg-blue-50 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob"></div>
+                    <div class="absolute -bottom-8 -left-4 w-72 h-72 bg-yellow-50 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-2000"></div>
+                
+                    <div class="relative rounded-2xl overflow-hidden shadow-2xl transform hover:scale-[1.02] transition duration-500">
+                        <img src="./img/macchinario.webp" 
+                            alt="Laboratorio artigianale zanzariere" 
+                            class="w-full h-full object-cover">
+                    
+                        <div class="absolute bottom-0 left-0 bg-white/90 backdrop-blur-sm p-4 m-6 rounded-lg shadow-lg max-w-xs">
+                            <div class="flex items-center gap-3">
+                                <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <div>
+                                    <p class="font-bold text-gray-800 text-sm">Produzione Locale</p>
+                                    <p class="text-xs text-gray-500">Qualità controllata a mano</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section id="recensioni" class="py-16 bg-blue-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        <div class="w-full flex justify-center">
+            <!-- Elfsight Google Reviews | Filice Zanzariere -->
+            <script src="https://elfsightcdn.com/platform.js" async></script>
+            <div class="elfsight-app-2f80d55c-4454-4c08-a3a5-9746673509d6" data-elfsight-app-lazy></div>
+            </div>
+
+        <div class="text-center mt-12">
+            <p class="text-sm text-gray-500 mb-4">Vuoi leggere altre opinioni?</p>
+            <a href="https://www.paginegialle.it/zanzarierefilice" target="_blank" class="inline-flex items-center text-yellow-700 hover:text-yellow-800 font-semibold transition bg-yellow-100 px-4 py-2 rounded-lg border border-yellow-200">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                Leggi anche su Pagine Gialle
+            </a>
+        </div>
+
+    </div>
+</section>
+
+    <section id="contatti" class="py-16 bg-blue-50">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="bg-yellow-300 rounded-xl shadow-xl p-8">
+            <h2 class="text-2xl font-bold text-center mb-6 text-gray-900">Scrivici per maggiori informazioni</h2>
+            
+            <form action="https://formspree.io/f/maqqyzzl" method="POST" class="space-y-4">
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label for="nome" class="block text-sm font-medium text-gray-700">Nome*</label>
+                        <input type="text" name="nome" id="nome" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Mario Rossi" required>
+                    </div>
+                    <div>
+                        <label for="telefono" class="block text-sm font-medium text-gray-700">Telefono</label>
+                        <input type="tel" name="telefono" id="telefono" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500" placeholder="333 1234567">
+                    </div>
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700">E-mail*</label>
+                        <input type="email" name="email" id="email" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500" placeholder="miaemail@email.com" required>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="messaggio" class="block text-sm font-medium text-gray-700">Messaggio*</label>
+                    <textarea name="messaggio" id="messaggio" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500" rows="4" placeholder="Ho bisogno di 2 zanzariere per le mie finestre..." required></textarea>
+                </div>
+
+                <div class="flex items-start">
+                    <div class="flex-shrink-0">
+                        <input id="privacy" name="privacy" type="checkbox" required class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                    </div>
+                    <div class="ml-3">
+                        <label for="privacy" class="text-sm text-gray-700">
+                            Ho letto l'informativa e acconsento al trattamento dei dati personali.
+                            <a href="#" target="_blank" class="font-bold text-blue-700 hover:text-blue-800 underline">Leggi Privacy Policy</a>.
+                        </label>
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full bg-blue-600 text-white font-bold py-3 rounded-md hover:bg-blue-700 transition duration-300 shadow-md">
+                    Invia Richiesta
+                </button>
+            </form>
+        </div>
+    </div>
+</section>
+
+<footer class="bg-gray-900 text-gray-300 py-10 border-t border-gray-800">
+    <div class="max-w-7xl mx-auto px-4 text-center">
+        
+        <div class="mb-6">
+            <h4 class="text-white font-bold text-lg mb-2">Filice Zanzariere</h4>
+            <p class="text-gray-400 text-sm leading-relaxed">
+                Corso Francia, 18 - 87032 Amantea (CS)<br>
+                Via Dogana, 125 - 87032 Amantea (CS)<br>
+                <span class="text-gray-500">P.IVA 03833860780</span>
+            </p>
+        </div>
+
+        <div class="flex flex-wrap justify-center gap-4 text-sm text-gray-500 mb-6 border-t border-gray-800 pt-6 w-full md:w-2/3 mx-auto">
+            <a href="#" class="hover:text-white transition underline decoration-gray-700">Informazioni Legali</a>
+            <span class="hidden sm:inline">|</span>
+            <a href="#" class="hover:text-white transition underline decoration-gray-700">Privacy Policy e Cookie Policy</a>
+            <span class="hidden sm:inline">|</span>
+            <a href="#" class="hover:text-white transition underline decoration-gray-700">Preferenze Cookie</a>
+        </div>
+
+        <p class="text-xs text-gray-600">
+            &copy; 2026 Filice Zanzariere. Tutti i diritti riservati.
+        </p>
+        
+    </div>
+</footer>
+
+    <a href="https://wa.me/393450030993?text=Salve,%20vorrei%20informazioni%20sulle%20zanzariere" 
+   target="_blank"
+   class="fixed bottom-6 right-6 z-50 bg-green-500 text-white p-4 rounded-full shadow-2xl hover:bg-green-600 hover:scale-110 transition duration-300 flex items-center justify-center group">
+    
+    <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487 2.155.929 2.975.929 4.026.869.891-.051 1.758-.718 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+    </svg>
+
+    <span class="absolute right-full mr-4 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap">
+        Scrivici su WhatsApp
+    </span>
+</a>
+
+<script>
+    // Script per l'animazione di ingresso
+    window.addEventListener('load', function() {
+        setTimeout(function() {
+            document.body.classList.add('intro-complete');
+            document.body.classList.remove('overflow-hidden');
+            setTimeout(() => {
+                document.getElementById('intro-overlay').style.display = 'none';
+            }, 1500); 
+        }, 500); 
+    });
+
+    // Script Menù Mobile Animato
+    const btn = document.getElementById('mobile-menu-btn');
+    const menu = document.getElementById('mobile-menu');
+
+    if (btn && menu) {
+        btn.addEventListener('click', () => {
+            menu.classList.toggle('open');
+        });
+
+        menu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                menu.classList.remove('open');
+            });
+        });
+    }
+</script>
+</body>
+</html>
